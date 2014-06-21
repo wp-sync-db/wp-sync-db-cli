@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Migrate your DB using WP Migrate DB Pro.
+ * Migrate your DB using WP Sync DB.
  */
-class WPMDBCLI extends WP_CLI_Command {
+class WPSDBCLI extends WP_CLI_Command {
 
 	/**
 	 * Run a migration.
@@ -15,7 +15,7 @@ class WPMDBCLI extends WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 * 	wp wpmdb migrate 1
+	 * 	wp wpsdb migrate 1
 	 *
 	 * @synopsis <profile>
 	 *
@@ -24,10 +24,10 @@ class WPMDBCLI extends WP_CLI_Command {
 	public function migrate( $args, $assoc_args ) {
 		$profile = $args[0];
 
-		$result = wpmdb_migrate( $profile );
+		$result = wpsdb_migrate( $profile );
 
 		if ( true === $result ) {
-			WP_CLI::success( __( 'Migration successful.', 'wp-migrate-db-pro-cli' ) );
+			WP_CLI::success( __( 'Migration successful.', 'wp-sync-db-cli' ) );
 			return;
 		}
 
@@ -37,4 +37,4 @@ class WPMDBCLI extends WP_CLI_Command {
 
 }
 
-WP_CLI::add_command( 'wpmdb', 'WPMDBCLI' );
+WP_CLI::add_command( 'wpsdb', 'WPSDBCLI' );

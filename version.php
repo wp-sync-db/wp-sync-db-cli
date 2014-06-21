@@ -1,2 +1,2 @@
 <?php
-$GLOBALS['wpmdb_meta']['wp-migrate-db-pro-cli']['version'] = '1.0b1';
+$GLOBALS['wpsdb_meta']['wp-sync-db-cli']['version'] = '1.0b1';

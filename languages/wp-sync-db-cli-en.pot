@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Migrate DB Pro CLI\n"
+"Project-Id-Version: WP Sync DB CLI\n"
 "POT-Creation-Date: 2014-05-27 11:40+1000\n"
 "PO-Revision-Date: 2014-05-27 11:41+1000\n"
 "Last-Translator: Delicious Brains <nom@deliciousbrains.com>\n"
@@ -22,29 +22,29 @@ msgstr ""
 msgid "Migration successful."
 msgstr ""
 
-#: class/wpmdbpro-cli.php:19
-msgid "Please update WP Migrate DB Pro."
+#: class/wpsdb-cli.php:19
+msgid "Please update WP Sync DB."
 msgstr ""
 
-#: class/wpmdbpro-cli.php:20
+#: class/wpsdb-cli.php:20
 msgid "Profile ID missing."
 msgstr ""
 
-#: class/wpmdbpro-cli.php:21
+#: class/wpsdb-cli.php:21
 msgid "Profile ID not found."
 msgstr ""
 
-#: class/wpmdbpro-cli.php:30
+#: class/wpsdb-cli.php:30
 msgid ""
 "Exports not supported for CLI migrations. Please instead select push or pull "
 "instead."
 msgstr ""
 
-#: class/wpmdbpro-cli.php:158
+#: class/wpsdb-cli.php:158
 #, php-format
 msgid "%1$s was expecting a JSON response, instead we received: %2$s"
 msgstr ""
 
-#: wp-migrate-db-pro-cli.php:44
-msgid "WP Migrate DB Pro CLI class not available"
+#: wp-sync-db-cli.php:44
+msgid "WP Sync DB CLI class not available"
 msgstr ""
