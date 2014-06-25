@@ -7,16 +7,28 @@ class WPMDBPro_CLI extends WPMDBPro_Addon {
 		$this->plugin_slug = 'wp-migrate-db-pro-cli';
 		$this->plugin_version = $GLOBALS['wpmdb_meta']['wp-migrate-db-pro-cli']['version'];
 
-		if( ! $this->meets_version_requirements( '1.4b1' ) ) return;
+		if( ! $this->meets_version_requirements( '1.4' ) ) {
+			return;
+		}
 	}
 
 	function cli_migration( $profile ) {
 		global $wpmdbpro;
+
 		$wpmdb_settings = get_option( 'wpmdb_settings' );
 		--$profile;
-		if( ! $this->meets_version_requirements( '1.4b1' ) ) return $this->cli_error( __( 'Please update WP Migrate DB Pro.', 'wp-migrate-db-pro-cli' ) );
-		if( ! isset( $profile ) ) return $this->cli_error( __( 'Profile ID missing.', 'wp-migrate-db-pro-cli' ) ); 
-		if( ! isset( $wpmdb_settings['profiles'][$profile] ) ) return $this->cli_error( __( 'Profile ID not found.', 'wp-migrate-db-pro-cli' ) );
+
+		if( ! $this->meets_version_requirements( '1.4' ) ) {
+			return $this->cli_error( __( 'Please update WP Migrate DB Pro.', 'wp-migrate-db-pro-cli' ) );
+		}
+
+		if( ! isset( $profile ) ) {
+			return $this->cli_error( __( 'Profile ID missing.', 'wp-migrate-db-pro-cli' ) );
+		}
+
+		if( ! isset( $wpmdb_settings['profiles'][$profile] ) ) {
+			return $this->cli_error( __( 'Profile ID not found.', 'wp-migrate-db-pro-cli' ) );
+		}
 
 		$this->set_time_limit();
 		$wpmdbpro->set_cli_migration();
@@ -25,7 +37,9 @@ class WPMDBPro_CLI extends WPMDBPro_Addon {
 		$connection_info = explode( "\n", $profile['connection_info'] );
 		$form_data = http_build_query( $profile );
 
-		if( 'savefile' == $profile['action'] ) return $this->cli_error( __( 'Exports not supported for CLI migrations. Please instead select push or pull instead.', 'wp-migrate-db-pro-cli' ) );
+		if( 'savefile' == $profile['action'] ) {
+			return $this->cli_error( __( 'Exports not supported for CLI migrations. Please instead select push or pull instead.', 'wp-migrate-db-pro-cli' ) );
+		}
 
 		do_action( 'wpmdb_cli_before_verify_connection_to_remote_site', $profile );
 
@@ -35,7 +49,9 @@ class WPMDBPro_CLI extends WPMDBPro_Addon {
 		$_POST['key'] = trim( $connection_info[1] );
 		$_POST = apply_filters( 'wpmdb_cli_verify_connection_to_remote_site_args', $_POST, $profile );
 		$response = $wpmdbpro->ajax_verify_connection_to_remote_site();
-		if( is_wp_error( $verify_connection_response = $this->verify_cli_response( $response, 'ajax_verify_connection_to_remote_site()' ) ) ) return $verify_connection_response;
+		if( is_wp_error( $verify_connection_response = $this->verify_cli_response( $response, 'ajax_verify_connection_to_remote_site()' ) ) ) {
+			return $verify_connection_response;
+		}
 
 		$verify_connection_response = apply_filters( 'wpmdb_cli_verify_connection_response', $verify_connection_response );
 		do_action( 'wpmdb_cli_before_initiate_migration', $profile, $verify_connection_response );
@@ -45,7 +61,9 @@ class WPMDBPro_CLI extends WPMDBPro_Addon {
 		$_POST['stage'] = ( '0' == $profile['create_backup'] ) ? 'migrate' : 'backup';
 		$_POST = apply_filters( 'wpmdb_cli_initiate_migration_args', $_POST, $profile, $verify_connection_response );
 		$response = $wpmdbpro->ajax_initiate_migration();
-		if( is_wp_error( $initiate_migration_response = $this->verify_cli_response( $response, 'ajax_initiate_migration()' ) ) ) return $initiate_migration_response;
+		if( is_wp_error( $initiate_migration_response = $this->verify_cli_response( $response, 'ajax_initiate_migration()' ) ) ) {
+			return $initiate_migration_response;
+		}
 
 		$initiate_migration_response = apply_filters( 'wpmdb_cli_initiate_migration_response', $initiate_migration_response );
 
@@ -131,7 +149,9 @@ class WPMDBPro_CLI extends WPMDBPro_Addon {
 		do_action( 'wpmdb_cli_before_finalize_migration', $profile, $verify_connection_response, $initiate_migration_response );
 
 		$finalize_migration_response = apply_filters( 'wpmdb_cli_finalize_migration', true, $profile, $verify_connection_response, $initiate_migration_response );
-		if( is_wp_error( $finalize_migration_response ) ) return $finalize_migration_response;
+		if( is_wp_error( $finalize_migration_response ) ) {
+			return $finalize_migration_response;
+		}
 
 		$_POST['tables'] = implode( ',', $tables_to_process );
 		$_POST['temp_prefix'] = $verify_connection_response['temp_prefix'];
@@ -139,7 +159,9 @@ class WPMDBPro_CLI extends WPMDBPro_Addon {
 		// don't send redundant POST variables
 		$_POST = $this->filter_post_elements( $_POST, array( 'action', 'intent', 'url', 'key', 'form_data', 'prefix', 'type', 'location', 'tables', 'temp_prefix' ) );
 		$response = trim( $wpmdbpro->ajax_finalize_migration() );
-		if( ! empty( $response ) ) return $this->cli_error( $response );
+		if( ! empty( $response ) ) {
+			return $this->cli_error( $response );
+		}
 
 		do_action( 'wpmdb_cli_after_finalize_migration', $profile, $verify_connection_response, $initiate_migration_response );
 
