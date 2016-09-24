@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: WP Sync DB CLI
-GitHub Plugin URI: slang800/wp-sync-db-cli
-Description: An extension to WP Sync DB, allows you to execute migrations using a function call or via WP-CLI
+Description: An extension to WP Sync DB, allows you to execute syncing using a function call or via WP-CLI
 Author: Sean Lang
 Version: 1.0b1
 Author URI: http://slang.cx
+GitHub Plugin URI: wp-sync-db/wp-sync-db-cli
 Network: True
 */
 
@@ -29,10 +29,10 @@ function wp_sync_db_cli_loaded() {
 }
 add_action( 'plugins_loaded', 'wp_sync_db_cli_loaded', 20 );
 
-function wpsdb_migrate( $profile ) {
+function wpsdb_sync( $profile ) {
 	global $wpsdb_cli;
 	if( empty( $wpsdb_cli ) ) {
 		return new WP_Error( 'wpsdb_cli_error', __( 'WP Sync DB CLI class not available', 'wp-sync-db-cli' ) );
 	}
-	return $wpsdb_cli->cli_migration( $profile );
+	return $wpsdb_cli->cli_syncing( $profile );
 }
