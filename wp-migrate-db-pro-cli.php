@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: WP Migrate DB Pro CLI
-Plugin URI: http://deliciousbrains.com/wp-migrate-db-pro/
+Plugin URI:
 Description: An extension to WP Migrate DB Pro, allows you to execute migrations using a function call or via WP-CLI
 Author: Delicious Brains
-Version: 1.1
-Author URI: http://deliciousbrains.com
+Version: 10.1.2.5
+Author URI:
 Network: True
 */
 
@@ -23,30 +23,29 @@ Network: True
 require_once 'version.php';
 $GLOBALS['wpmdb_meta']['wp-migrate-db-pro-cli']['folder'] = basename( plugin_dir_path( __FILE__ ) );
 
-function wp_migrate_db_pro_cli_loaded() {
-	// register with wp-cli if it's running, and command hasn't already been defined elsewhere
-	if ( defined( 'WP_CLI' ) && WP_CLI && ! class_exists( 'WPMDBCLI' ) ) {
-		require_once dirname( __FILE__ ) . '/class/command.php';
+function wp_migrate_db_pro_cli_addon_loaded() {
+	// register with wp-cli if it's running, command hasn't already been defined elsewhere, and WPMDBPro is active
+	if ( defined( 'WP_CLI' ) && WP_CLI && ! class_exists( 'WPMDBPro_CLI_Command' ) && class_exists( 'WPMDBPro' ) ) {
+		require_once dirname( __FILE__ ) . '/class/wpmdbpro-cli-command.php';
+	}
+
+	// register plugin with wordpress
+	if ( class_exists( 'WPMDBPro_Addon' ) ) {
+		require_once dirname( __FILE__ ) . '/class/wpmdbpro-cli-addon.php';
 	}
 
 	load_plugin_textdomain( 'wp-migrate-db-pro-cli', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-}
-add_action( 'plugins_loaded', 'wp_migrate_db_pro_cli_loaded', 20 );
 
-function wpmdb_migrate( $profile ) {
-	$wpmdbpro_cli = wp_migrate_db_pro_cli();
-	if ( empty( $wpmdbpro_cli ) ) {
-		return new WP_Error( 'wpmdb_cli_error', __( 'WP Migrate DB Pro CLI class not available', 'wp-migrate-db-pro-cli' ) );
-	}
-	return $wpmdbpro_cli->cli_migration( $profile );
+	cli_version_requirement_check();
 }
+add_action( 'plugins_loaded', 'wp_migrate_db_pro_cli_addon_loaded', 20 );
 
 /**
  * Populate the $wpmdbpro_cli global with an instance of the WPMDBPro_CLI class and return it.
  *
  * @return WPMDBPro_CLI The one true global instance of the WPMDBPro_CLI class.
  */
-function wp_migrate_db_pro_cli() {
+function wp_migrate_db_pro_cli_addon() {
 	global $wpmdbpro_cli;
 
 	if ( ! is_null( $wpmdbpro_cli ) ) {
@@ -67,4 +66,28 @@ function wp_migrate_db_pro_cli() {
 	do_action( 'wp_migrate_db_pro_cli_after_load' );
 
 	return $wpmdbpro_cli;
+}
+
+/**
+ * Check if php version meets requirements to run cli addon
+ * Display notice on options page if it doesn't.
+ *
+ * @return void
+ */
+function cli_version_requirement_check() {
+	$required_php_version = $GLOBALS['wpmdb_meta']['wp-migrate-db-pro-cli']['required-php-version'];
+	if ( ! version_compare( PHP_VERSION, $required_php_version, '>=' ) ) {
+		add_action( 'wpmdb_notices', 'show_php_version_requirement_warning');
+	}
+}
+
+/**
+ * Display php version requirement warning message.
+ *
+ * @return  void
+ */
+function show_php_version_requirement_warning() {
+	$template_dir_path = plugin_dir_path( __FILE__ ) . 'template/' ;
+	$warning_template_path = $template_dir_path . 'php-version-requirement-warning.php';
+	include( $warning_template_path );
 }

@@ -3,7 +3,11 @@
 /**
  * Migrate your DB using WP Migrate DB Pro.
  */
-class WPMDBCLI extends WP_CLI_Command {
+
+//require wpmdbpro-command.php from wp-migrate-db-pro
+require_once $GLOBALS['wpmdb_meta']['wp-migrate-db-pro']['abspath'] . '/class/wpmdbpro-command.php';
+
+class WPMDBPro_CLI_Command extends WPMDBPro_Command {
 
 	/**
 	 * Push local DB up to remote.
@@ -68,7 +72,7 @@ class WPMDBCLI extends WP_CLI_Command {
 	 * [--include-transients]
 	 * : Include transients (temporary cached data).
 	 *
-	 * [--backup=<backup>]
+	 * [--backup=<prefix|selected|table_one,table_two,table_etc>]
 	 * : Perform a backup of the destination site's database tables before replacing it.
 	 *
 	 *     Accepted values:
@@ -78,11 +82,8 @@ class WPMDBCLI extends WP_CLI_Command {
 	 *     * selected - Backup only tables selected for migration (as in --include-tables)
 	 *     * A comma separated list of the tables to backup.
 	 *
-	 *     Table names should be quoted as needed, i.e. when using a comma in the
-	 *     find/replace string.
-	 *
 	 * [--media=<compare|compare-and-remove|remove-and-copy>]
-	 * : Perform a migration of the media files. Requires the Media Files Addon.
+	 * : Perform a migration of the media files. Requires the Media Files addon.
 	 *
 	 *     Accepted values:
 	 *
@@ -94,6 +95,19 @@ class WPMDBCLI extends WP_CLI_Command {
 	 *     * remove-and-copy - removes all remote media files and uploads all local
 	 *                         media files (skips comparison)
 	 *
+	 * [--media-subsites=<blog-id|subsite-url>]
+	 * : Only transfer media files for selected subsites
+	 *
+	 *     * Only applies to multisite installs
+	 *     * Separate multiple subsites with commas
+	 *     * Use Blog ID or URL of *local* subsites
+	 *
+	 * [--subsite=<blog-id|subsite-url>]
+	 * : Push the given subsite to the remote single site install.
+	 * Requires the Multisite Tools addon.
+	 *
+	 *     Overrides the --media-subsites option.
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp migratedb push http://bradt.ca LJPmq3t8h6uuN7aqQ3YSnt7C88Wzzv5BVPlgLbYE \
@@ -101,7 +115,9 @@ class WPMDBCLI extends WP_CLI_Command {
 	 *        --replace=http://bradt.ca,/home/bradt.ca
 	 *        --include-tables=wp_posts,wp_postmeta
 	 *
-	 *
+	 * @param array $args
+	 * @param array $assoc_args
+	 * 
 	 * @since 1.1
 	 */
 	public function push( $args, $assoc_args ) {
@@ -109,7 +125,7 @@ class WPMDBCLI extends WP_CLI_Command {
 
 		$profile = $this->_get_profile_data_from_args( $args, $assoc_args );
 		if ( is_wp_error( $profile ) ) {
-			WP_CLI::error( $profile );
+			WP_CLI::error( WPMDBPro_CLI::cleanup_message( $profile->get_error_message() ) );
 		}
 
 		$this->_perform_cli_migration( $profile );
@@ -178,7 +194,7 @@ class WPMDBCLI extends WP_CLI_Command {
 	 * [--include-transients]
 	 * : Include transients (temporary cached data).
 	 *
-	 * [--backup=<backup>]
+	 * [--backup=<prefix|selected|table_one,table_two,table_etc>]
 	 * : Perform a backup of the destination site's database tables before replacing it.
 	 *
 	 *     Accepted values:
@@ -188,11 +204,8 @@ class WPMDBCLI extends WP_CLI_Command {
 	 *     * selected - Backup only tables selected for migration (as in --include-tables)
 	 *     * A comma separated list of the tables to backup.
 	 *
-	 *     Table names should be quoted as needed, i.e. when using a comma in the
-	 *     find/replace string.
-	 *
 	 * [--media=<compare|compare-and-remove|remove-and-copy>]
-	 * : Perform a migration of the media files. Requires the Media Files Addon.
+	 * : Perform a migration of the media files. Requires the Media Files addon.
 	 *
 	 *     Accepted values:
 	 *
@@ -204,6 +217,19 @@ class WPMDBCLI extends WP_CLI_Command {
 	 *     * remove-and-copy - removes all local media files and downloads all remote
 	 *                         media files (skips comparison)
 	 *
+	 * [--media-subsites=<blog-id|subsite-url>]
+	 * : Only transfer media files for selected subsites
+	 *
+	 *     * Only applies to multisite installs
+	 *     * Separate multiple subsites with commas
+	 *     * Use Blog ID or URL of *remote* subsites
+	 *
+	 * [--subsite=<blog-id|subsite-url>]
+	 * : Pull the remote single site install into the given subsite.
+	 * Requires the Multisite Tools addon.
+	 *
+	 *     Overrides the --media-subsites option.
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp migratedb pull http://bradt.ca LJPmq3t8h6uuN7aqQ3YSnt7C88Wzzv5BVPlgLbYE \
@@ -211,6 +237,8 @@ class WPMDBCLI extends WP_CLI_Command {
 	 *        --replace=http://bradt.ca,/home/bradt.ca
 	 *        --include-tables=wp_posts,wp_postmeta
 	 *
+	 * @param array $args
+	 * @param array $assoc_args
 	 *
 	 * @since 1.1
 	 */
@@ -219,7 +247,7 @@ class WPMDBCLI extends WP_CLI_Command {
 
 		$profile = $this->_get_profile_data_from_args( $args, $assoc_args );
 		if ( is_wp_error( $profile ) ) {
-			WP_CLI::error( $profile );
+			WP_CLI::error( WPMDBPro_CLI::cleanup_message( $profile->get_error_message() ) );
 		}
 
 		$this->_perform_cli_migration( $profile );
@@ -238,6 +266,9 @@ class WPMDBCLI extends WP_CLI_Command {
 	 *  wp migratedb migrate 1
 	 *
 	 * @synopsis <profile>
+	 *
+	 * @param array $args
+	 * @param array $assoc_args
 	 *
 	 * @since 1.0
 	 */
@@ -261,156 +292,46 @@ class WPMDBCLI extends WP_CLI_Command {
 	 *
 	 * @synopsis <profile>
 	 *
+	 * @param array $args
+	 * @param array $assoc_args
+	 *
 	 * @since 1.1
 	 */
 	public function profile( $args, $assoc_args ) {
 		// uses migrate method
-		return $this->migrate( $args, $assoc_args );
+		$this->migrate( $args, $assoc_args );
 	}
 
-	/**
-	 * Get profile data from CLI args.
-	 *
-	 * @since 1.1
-	 *
-	 * @param array $args
-	 * @param array $assoc_args
-	 *
-	 * @return array|WP_Error
-	 */
-	protected function _get_profile_data_from_args( $args, $assoc_args ) {
-		$wpmdbpro_cli = wp_migrate_db_pro_cli();
-
-		if ( empty( $args[0] ) && empty( $args[1] ) ) {
-			return $wpmdbpro_cli->cli_error( __( 'URL and secret-key is required', 'wp-migrate-db-pro-cli' ) );
-		}
-		$connection_info = sprintf( '%s %s', $args[0], $args[1] );
-
-		if ( empty( $assoc_args['action'] ) ) {
-			return $wpmdbpro_cli->cli_error( __( 'Missing action parameter', 'wp-migrate-db-pro-cli' ) );
-		}
-		$action = $assoc_args['action'];
-
-		// --find=<old> and --replace=<new>
-		$replace_old = array();
-		$replace_new = array();
-		if ( ! empty( $assoc_args['find'] ) ) {
-			$replace_old = explode( ',', $assoc_args['find'] );
-		}
-		if ( ! empty( $assoc_args['replace'] ) ) {
-			$replace_new = explode( ',', $assoc_args['replace'] );
-		}
-		if ( count( $replace_old ) !== count( $replace_new ) ) {
-			return $wpmdbpro_cli->cli_error( sprintf( __( '%1$s and %2$s must contain the same number of values', 'wp-migrate-db-pro-cli' ), '--find', '--replace' ) );
-		}
-		array_unshift( $replace_old, '' );
-		array_unshift( $replace_new, '' );
-
-		// --include-tables=<tables>
-		if ( ! empty( $assoc_args['include-tables'] ) ) {
-			$table_migrate_option = 'migrate_select';
-			$select_tables        = explode( ',' , $assoc_args['include-tables'] );
-		} else {
-			$select_tables        = array();
-			$table_migrate_option = 'migrate_only_with_prefix';
-		}
-
-		// --exclude-post-types=<post-types>
-		$select_post_types = array();
-		if ( ! empty( $assoc_args['exclude-post-types'] ) ) {
-			$select_post_types = explode( ',', $assoc_args['exclude-post-types'] );
-		}
-		$exclude_post_types = count( $select_post_types ) > 0 ? 1 : 0;
-
-		// --skip-replace-guids
-		$replace_guids = 1;
-		if ( isset( $assoc_args['skip-replace-guids'] ) ) {
-			$replace_guids = 0;
-		}
-
-		// --exclude-spam
-		$exclude_spam = intval( isset( $assoc_args['exclude-spam'] ) );
-
-		// --preserve-active-plugins
-		$keep_active_plugins = intval( isset( $assoc_args['preserve-active-plugins'] ) );
-
-		// --include-transients.
-		$exclude_transients = intval( ! isset( $assoc_args['include-transients'] ) );
-
-		// --backup.
-		$create_backup = 0;
-		$backup_option = 'backup_only_with_prefix';
-		$select_backup = array( '' );
-		if ( ! empty( $assoc_args['backup'] ) ) {
-			$create_backup = 1;
-			if ( ! in_array( $assoc_args['backup'], array( 'prefix', 'selected' ) ) ) {
-				$backup_option = 'backup_manual_select';
-				$select_backup = explode( ',', $assoc_args['backup'] );
-			} else if ( 'selected' === $assoc_args['backup'] ) {
-				$backup_option = 'backup_selected';
-			}
-		}
-
-		// --media
-		$media_vars = array();
-		if ( ! empty( $assoc_args['media'] ) ) {
-			if ( ! class_exists( 'WPMDBPro_Media_Files' ) ) {
-				return $wpmdbpro_cli->cli_error( __( 'The Media Files addon needs to be installed and activated to make use of this option', 'wp-migrate-db-pro-cli' ) );
-			} else {
-				$media_files            = 1;
-				$remove_local_media     = 0;
-				$media_migration_option = ( 'remove-and-copy' == $assoc_args['media'] ) ? 'entire' : 'compare';
-
-				if ( 'compare-and-remove' == $assoc_args['media'] ) {
-					$remove_local_media = 1;
-				}
-
-				$media_vars = array( 'media_files', 'media_migration_option', 'remove_local_media' );
-			}
-		}
-
-		return compact(
-			'connection_info',
-			'action',
-			'replace_old',
-			'replace_new',
-			'table_migrate_option',
-			'select_tables',
-			'exclude_post_types',
-			'select_post_types',
-			'replace_guids',
-			'exclude_spam',
-			'keep_active_plugins',
-			'exclude_transients',
-			'create_backup',
-			'backup_option',
-			'select_backup',
-			$media_vars
-		);
-	}
-
-	/**
-	 * Perform CLI migration.
-	 *
-	 * @since 1.1
-	 *
-	 * @param  mixed Profile key or array
-	 * @return void
-	 */
+	// overrides _perform_cli_migration from WPMDB_Command
 	protected function _perform_cli_migration( $profile ) {
-		$result  = wpmdb_migrate( $profile );
+		$wpmdbpro_cli = null;
+
+		if ( function_exists( 'wp_migrate_db_pro_cli_addon' ) ) {
+			$wpmdbpro_cli = wp_migrate_db_pro_cli_addon();
+		}
+
+		if ( empty( $wpmdbpro_cli ) ) {
+			WP_CLI::error( __( 'WP Migrate DB Pro CLI class not available.', 'wp-migrate-db-pro-cli' ) );
+			return;
+		}
+
+		$result = $wpmdbpro_cli->cli_migration( $profile );
+
 		if ( true === $result ) {
 			WP_CLI::success( __( 'Migration successful.', 'wp-migrate-db-pro-cli' ) );
-		} else if ( is_wp_error( $result ) ) {
-			WP_CLI::error( $result->get_error_message() );
+		} elseif ( ! is_wp_error( $result ) ) {
+			WP_CLI::success( sprintf( __( 'Export saved to: %s', 'wp-migrate-db-pro-cli' ), $result ) );
+		} elseif ( is_wp_error( $result ) ) {
+			WP_CLI::error( WPMDBPro_CLI::cleanup_message( $result->get_error_message() ) );
 		}
 	}
+
 }
 
 /**
  * Deprecated WP Migrate DB Pro command. Use migratedb instead.
  */
-class WPMDBCLI_Deprecated extends WPMDBCLI {
+class WPMDBCLI_Deprecated extends WPMDBPro_CLI_Command {
 	/**
 	 * Run a migration.
 	 *
@@ -425,6 +346,9 @@ class WPMDBCLI_Deprecated extends WPMDBCLI {
 	 *
 	 * @synopsis <profile>
 	 *
+	 * @param array $args
+	 * @param array $assoc_args
+	 *
 	 * @since 1.0
 	 */
 	public function migrate( $args, $assoc_args ) {
@@ -433,4 +357,4 @@ class WPMDBCLI_Deprecated extends WPMDBCLI {
 }
 
 WP_CLI::add_command( 'wpmdb', 'WPMDBCLI_Deprecated' ); // deprecated older command
-WP_CLI::add_command( 'migratedb', 'WPMDBCLI' );
+WP_CLI::add_command( 'migratedb', 'WPMDBPro_CLI_Command' );

@@ -1,94 +1,126 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Migrate DB Pro CLI\n"
-"POT-Creation-Date: 2015-01-20 14:24+1200\n"
-"PO-Revision-Date: 2015-01-20 14:26+1200\n"
-"Last-Translator: Ian M. Jones <ian@ianmjones.com>\n"
-"Language-Team: Delicious Brains <nom@deliciousbrains.com>\n"
-"Language: en\n"
+"Project-Id-Version: wp-migrate-db-pro-cli\n"
+"Report-Msgid-Bugs-To: nom@deliciousbrains.com\n"
+"POT-Creation-Date: 2016-07-11 18:30-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.3\n"
-"X-Poedit-Basepath: ..\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
-"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-SearchPath-0: .\n"
 
-#: class/command.php:285
-msgid "URL and secret-key is required"
+#: class/wpmdbpro-cli-command.php:314
+msgid "WP Migrate DB Pro CLI class not available."
 msgstr ""
 
-#: class/command.php:290
-msgid "Missing action parameter"
+#: class/wpmdbpro-cli-command.php:321
+msgid "Migration successful."
 msgstr ""
 
-#: class/command.php:304
+#: class/wpmdbpro-cli-command.php:323
 #, php-format
-msgid "%1$s and %2$s must contain the same number of values"
+msgid "Export saved to: %s"
 msgstr ""
 
-#: class/command.php:358
+#: class/wpmdbpro-cli.php:103
+msgid "Profile ID not found."
+msgstr ""
+
+#: class/wpmdbpro-cli.php:117
+msgid "Verifying connection..."
+msgstr ""
+
+#: class/wpmdbpro-cli.php:247
+msgid "URL and secret-key are required"
+msgstr ""
+
+#: class/wpmdbpro-cli.php:277
 msgid ""
 "The Media Files addon needs to be installed and activated to make use of "
 "this option"
 msgstr ""
 
-#: class/command.php:403
-msgid "Migration successful."
+#: class/wpmdbpro-cli.php:280
+msgid "--media must be set to an acceptable value, see: wp help migratedb "
 msgstr ""
 
-#: class/wpmdbpro-cli.php:57
-msgid "Profile ID not found."
+#: class/wpmdbpro-cli.php:297
+msgid "The --media-subsites option can only be used on a multisite install"
 msgstr ""
 
-#: class/wpmdbpro-cli.php:71
-msgid "Please update WP Migrate DB Pro."
-msgstr ""
-
-#: class/wpmdbpro-cli.php:75
-msgid "Profile ID missing."
-msgstr ""
-
-#: class/wpmdbpro-cli.php:105
+#: class/wpmdbpro-cli.php:300
 msgid ""
-"Exports not supported for CLI migrations. Please select push or pull instead."
+"The --media-subsites option can only be used in conjunction with the --media "
+"option"
 msgstr ""
 
-#: class/wpmdbpro-cli.php:190
-#, php-format
+#: class/wpmdbpro-cli.php:303
+#: class/wpmdbpro-cli.php:563
 msgid ""
-"We were expecting a JSON response, instead we received: %2$s (function name: "
-"%1$s)"
+"One or more valid Blog IDs or Subsite URLs must be supplied to make use of "
+"the --media-subsites option"
 msgstr ""
 
-#: class/wpmdbpro-cli.php:222
-msgid "Verifying connection..."
-msgstr ""
-
-#: class/wpmdbpro-cli.php:251
-msgid "Initiating migration..."
-msgstr ""
-
-#: class/wpmdbpro-cli.php:338
-msgid "Performing backup"
-msgstr ""
-
-#: class/wpmdbpro-cli.php:340
-msgid "Migrating tables"
-msgstr ""
-
-#: class/wpmdbpro-cli.php:394
+#: class/wpmdbpro-cli.php:347
 msgid "Invalid backup option or non-existent table selected for backup."
 msgstr ""
 
-#: class/wpmdbpro-cli.php:484
-msgid "Cleaning up..."
+#: class/wpmdbpro-cli.php:476
+msgid "Please update WP Migrate DB Pro."
 msgstr ""
 
-#: wp-migrate-db-pro-cli.php:39
-msgid "WP Migrate DB Pro CLI class not available"
+#: class/wpmdbpro-cli.php:496
+msgid "Profile ID missing."
+msgstr ""
+
+#: class/wpmdbpro-cli.php:524
+msgid ""
+"The profile is set to migrate media files, however WP Migrate DB Pro Media "
+"Files does not seem to be installed/active on the local website."
+msgstr ""
+
+#: class/wpmdbpro-cli.php:546
+msgid ""
+"The profile is set to migrate media files, however WP Migrate DB Pro Media "
+"Files does not seem to be installed/active on the remote website."
+msgstr ""
+
+#: class/wpmdbpro-cli.php:553
+msgid ""
+"One or more subsites should exist on the remote to make use of the --media-"
+"subsites option"
+msgstr ""
+
+#: class/wpmdbpro-cli.php:600
+msgctxt "The caches and rewrite rules for the target are being flushed"
+msgid "Flushing caches and rewrite rules..."
+msgstr ""
+
+#: class/wpmdbpro-cli.php:651
+msgid "Performing backup"
+msgstr ""
+
+#: class/wpmdbpro-cli.php:653
+msgid "Migrating tables"
+msgstr ""
+
+#: template/php-version-requirement-warning.php:7
+msgid "CLI Addon Disabled"
+msgstr ""
+
+#: template/php-version-requirement-warning.php:9
+#, php-format
+msgid ""
+"The CLI addon follows the requirements of WP-CLI, which requires %1$s+. You "
+"are currently running PHP %2$s. You will need to update PHP to use WP-CLI "
+"and the CLI addon. <strong><a href=\"%3$s\">Deactivate</a></strong> the CLI "
+"addon to get rid of this message."
 msgstr ""
