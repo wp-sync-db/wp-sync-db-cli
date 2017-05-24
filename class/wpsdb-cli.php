@@ -10,6 +10,15 @@ class WPSDB_CLI extends WPSDB_Addon {
 		if( ! $this->meets_version_requirements( '1.4b1' ) ) return;
 	}
 
+	function cli_profiles() {
+		$wpsdb_settings = get_option( 'wpsdb_settings' );
+		$profiles = [];
+		foreach ($wpsdb_settings['profiles'] as $id => $profile) {
+			array_push($profiles, "\t{$id} | {$profile['action']} => {$profile['name']}");
+		}
+		return implode("\n", $profiles);;
+	}
+
 	function cli_migration( $profile ) {
 		global $wpsdb;
 		$wpsdb_settings = get_option( 'wpsdb_settings' );

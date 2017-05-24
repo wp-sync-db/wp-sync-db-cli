@@ -35,6 +35,27 @@ class WPSDBCLI extends WP_CLI_Command {
 		return;
 	}
 
+	/**
+	 * List all profiles.
+	 *
+	 * ## EXAMPLES
+	 *
+	 * 	wp wpsdb profiles
+	 *
+	 */
+
+	public function profiles() {
+		$result = wpsdb_profiles();
+
+		if ( $result ) {
+			WP_CLI::log( __( $result, 'wp-sync-db-cli' ) );
+			return;
+		}
+
+		WP_CLI::warning( __( 'You have no profiles.', 'wp-sync-db-cli' ) );
+		return;
+	}
+
 }
 
 WP_CLI::add_command( 'wpsdb', 'WPSDBCLI' );
