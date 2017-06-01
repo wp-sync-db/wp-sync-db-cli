@@ -13,7 +13,8 @@ class WPSDB_CLI extends WPSDB_Addon {
 	function cli_profiles() {
 		$wpsdb_settings = get_option( 'wpsdb_settings' );
 		$profiles = [];
-		foreach ($wpsdb_settings['profiles'] as $id => $profile) {
+		foreach ($wpsdb_settings['profiles'] as $index => $profile) {
+      $id = $index + 1;
 			array_push($profiles, "\t{$id} | {$profile['action']} => {$profile['name']}");
 		}
 		return implode("\n", $profiles);;
