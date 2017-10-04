@@ -58,8 +58,6 @@ class WPSDBCLI extends WP_CLI_Command {
 	 * [--migrate-tables=<CSV of tables to migrate>]
 	 * : Comma separated list of tables to migrate from the remote WordPress to locally.
 	 *
-	 * If you set this to `outlandish` it will migrate the tables we would typically expect from WordPress.
-	 *
 	 * [--exclude-post-types=<CSV of tables to migrate>]
 	 * : Comma separated list of post types to exclude from migrate from the remote WordPress to locally.
 	 *

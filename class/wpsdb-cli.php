@@ -115,29 +115,9 @@ class WPSDB_CLI extends WPSDB_Addon {
 		if ( isset( $assoc_args['migrate-tables'] ) ) {
 			$new_profile["table_migrate_option"] = 'migrate_select';
 
-			if ( $new_profile["migrate-tables"] === 'outlandish' ) {
-				WP_CLI::log(  __( 'Selecting Outlandish default WordPress tables for migraton.',  'wp-sync-db-cli' ) );
-				$new_profile["select_tables"] = array(
-					"wp_commentmeta",
-		      "wp_comments",
-		      "wp_links",
-		      "wp_options",
-		      "wp_p2p",
-		      "wp_p2pmeta",
-		      "wp_postmeta",
-		      "wp_posts",
-		      "wp_term_relationships",
-		       "wp_term_taxonomy",
-		      "wp_termmeta",
-		      "wp_terms",
-		      "wp_usermeta",
-		      "wp_users",
-				);
-			} else {
-				$new_profile["select_tables"] = explode( ',', $assoc_args['migrate-tables'] );
-				WP_CLI::log(  __( 'The following tables are selected for migration:',  'wp-sync-db-cli' ) );
-				$this->log_list( $new_profile["select_tables"] );
-			}
+			$new_profile["select_tables"] = explode( ',', $assoc_args['migrate-tables'] );
+			WP_CLI::log(  __( 'The following tables are selected for migration:',  'wp-sync-db-cli' ) );
+			$this->log_list( $new_profile["select_tables"] );
 		}
 
 		$wpsdb_settings['profiles'][] = $new_profile;
