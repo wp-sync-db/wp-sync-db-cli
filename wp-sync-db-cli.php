@@ -36,3 +36,11 @@ function wpsdb_migrate( $profile ) {
 	}
 	return $wpsdb_cli->cli_migration( $profile );
 }
+
+function wpdsb_create_profile( $name, $assoc_args ) {
+	global $wpsdb_cli;
+	if( empty( $wpsdb_cli ) ) {
+		return new WP_Error( 'wpsdb_cli_error', __( 'WP Sync DB CLI class not available', 'wp-sync-db-cli' ) );
+	}
+	return $wpsdb_cli->cli_create_profile( $name, $assoc_args );
+}

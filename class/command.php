@@ -55,7 +55,16 @@ class WPSDBCLI extends WP_CLI_Command {
 		* @subcommand create-profile
 		*/
 	public function create_profile( $args, $assoc_args ) {
-		WP_CLI::success( __( 'Profile created.', 'wp-sync-db-cli' ) );
+		$name = $args[0];
+		$result = wpdsb_create_profile( $name, $assoc_args );
+
+		if ( true === $result ) {
+			WP_CLI::success( __( 'Profile created.', 'wp-sync-db-cli' ) );
+			return;
+		}
+
+		WP_CLI::error( $result->get_error_message() );
+		return;
 	}
 
 }

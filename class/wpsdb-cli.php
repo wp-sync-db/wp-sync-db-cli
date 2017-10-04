@@ -10,6 +10,81 @@ class WPSDB_CLI extends WPSDB_Addon {
 		if( ! $this->meets_version_requirements( '1.4b1' ) ) return;
 	}
 
+	function cli_create_profile( $name, $assoc_args ) {
+		global $wpsdb;
+		$wpsdb_settings = get_option( 'wpsdb_settings' );
+
+		$profile_exists = false;
+
+		foreach ( $wpsdb_settings['profiles'] as $profile ) {
+			if ( $profile['name'] === $name ) {
+				$profile_exists = true;
+				break;
+			}
+		}
+
+		if ( $profile_exists ) {
+			return $this->cli_error( sprintf( __( 'Profile with the name %1$s already exists.', 'wp-sync-db-cli' ), $name ) );
+		}
+
+		$new_profile = array();
+
+		$new_profile["create_new_profile"] = "Staging";
+		$new_profile["name"] = "Staging";
+
+		// This is probably going to be a faff to do so leave it.
+		$new_profile["replace_old"] = array(
+			"//staging.bprc.out.re",
+			"/opt/bprc/releases/20171002153612Z/web"
+		);
+
+		$new_profile["replace_new"] = array(
+			"//bprc.local",
+			"/app/web"
+		);
+
+		// This is all the tables in a standard Outlandish WordPress install we
+		// by default sync.
+		$new_profile["select_tables"] = array(
+			"wp_commentmeta",
+      "wp_comments",
+      "wp_links",
+      "wp_options",
+      "wp_p2p",
+      "wp_p2pmeta",
+      "wp_postmeta",
+      "wp_posts",
+      "wp_term_relationships",
+       "wp_term_taxonomy",
+      "wp_termmeta",
+      "wp_terms",
+      "wp_usermeta",
+      "wp_users",
+		);
+
+		$new_profile["save_computer"] = "1";
+		$new_profile["gzip_file"] = "1";
+		$new_profile["replace_guids"] = "1";
+		$new_profile["exclude_spam"] = "1";
+		$new_profile["keep_active_plugins"] = "1";
+		$new_profile["create_backup"] = "0";
+		$new_profile["exclude_post_types"] = "0";
+		$new_profile["action"] = "pull";
+		$new_profile["connection_info"] = "";
+		$new_profile["table_migrate_option"] = "migrate_select";
+		$new_profile["exclude_transients"] = "1";
+		$new_profile["backup_option"] = "backup_selected";
+		$new_profile["media_files"] = "1";
+		$new_profile["save_migration_profile"] = "1";
+		$new_profile["save_migration_profile_option"] = "new";
+
+		$wpsdb_settings['profiles'][] = $new_profile;
+
+		update_option( 'wpsdb_settings', $wpsdb_settings );
+
+		return true;
+	}
+
 	function cli_migration( $profile ) {
 		global $wpsdb;
 		$wpsdb_settings = get_option( 'wpsdb_settings' );
