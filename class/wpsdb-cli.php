@@ -16,10 +16,25 @@ class WPSDB_CLI extends WPSDB_Addon {
 		}
 	}
 
-	function kebab_case_to_snake_case($value) {
+	function kebab_case_to_snake_case( $value ) {
 		return preg_replace_callback('/-(.)/u', function($el) {
 			return '_' . $el[1];
 		}, $value);
+	}
+
+	function values_as_booleans_to_one_and_zero_strings( $array ) {
+		$result = [];
+
+		foreach ($array as $key => $value) {
+			if ( $value === 'true' || $value === 'false' ) {
+				$result[$key] = (string)(int)($value === 'true');
+				continue;
+			}
+
+			$result[$key] = $value;
+		}
+
+		return $result;
 	}
 
 	function keys_from_kebab_case_to_snake_case( $array ) {
@@ -89,7 +104,9 @@ class WPSDB_CLI extends WPSDB_Addon {
 		$new_profile["save_migration_profile"] = "1";
 		$new_profile["save_migration_profile_option"] = "new";
 
-		$new_profile = array_merge( $new_profile, $this->keys_from_kebab_case_to_snake_case( $assoc_args ) );
+		$values_for_wordpress = $this->keys_from_kebab_case_to_snake_case( $assoc_args );
+		$values_for_wordpress = $this->values_as_booleans_to_one_and_zero_strings( $values_for_wordpress );
+		$new_profile = array_merge( $new_profile, $values_for_wordpress );
 
 		if ( isset( $assoc_args['exclude-post-types'] ) ) {
 			$new_profile['exclude_post_types'] = '1';
@@ -128,7 +145,6 @@ class WPSDB_CLI extends WPSDB_Addon {
 		}
 
 		$wpsdb_settings['profiles'][] = $new_profile;
-
 		update_option( 'wpsdb_settings', $wpsdb_settings );
 
 		return true;
