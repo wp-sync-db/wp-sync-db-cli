@@ -56,6 +56,15 @@ class WPSDBCLI extends WP_CLI_Command {
 		*/
 	public function create_profile( $args, $assoc_args ) {
 		$name = $args[0];
+
+		if ( ! isset( $assoc_args['remote_wordpress'] ) || ! isset( $assoc_args['token'] ) ) {
+			$error_lines = array();
+			$error_lines[] = __( 'Connection information to remote WordPress installation for migration is required.' );
+			$error_lines[] = __( 'Set with --remote_wordpress and --token flag.' );
+			WP_CLI::error_multi_line( $error_lines );
+			return;
+		}
+
 		$result = wpdsb_create_profile( $name, $assoc_args );
 
 		if ( true === $result ) {
