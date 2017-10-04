@@ -88,6 +88,7 @@ class WPSDBCLI extends WP_CLI_Command {
 	 * @synopsis <profile>
 	 *
 	 * @since 1.0
+	 * TODO: Incorporate the above into a proper help message.
 	 */
 	 /**
  		* @subcommand create-profile
