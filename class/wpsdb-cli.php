@@ -10,6 +10,28 @@ class WPSDB_CLI extends WPSDB_Addon {
 		if( ! $this->meets_version_requirements( '1.4b1' ) ) return;
 	}
 
+	function log_list( $list ) {
+		foreach ( $list as $item ) {
+			WP_CLI::log( "- $item" );
+		}
+	}
+
+	function kebab_case_to_snake_case($value) {
+		return preg_replace_callback('/-(.)/u', function($el) {
+			return '_' . $el[1];
+		}, $value);
+	}
+
+	function keys_from_kebab_case_to_snake_case( $array ) {
+		$result = [];
+
+		foreach ($array as $key => $value) {
+				$result[ $this->kebab_case_to_snake_case( $key ) ] = $value;
+		}
+
+		return $result;
+	}
+
 	function cli_create_profile( $name, $assoc_args ) {
 		$wpsdb_settings = get_option( 'wpsdb_settings' );
 
@@ -26,6 +48,8 @@ class WPSDB_CLI extends WPSDB_Addon {
 			return $this->cli_error( sprintf( __( 'Profile with the name %1$s already exists.', 'wp-sync-db-cli' ), $name ) );
 		}
 
+		WP_CLI::log(  sprintf( __( 'Creating database migration profile with name %1$s.', 'wp-sync-db-cli' ), $name ) );
+
 		$new_profile = array();
 
 		$new_profile["name"] = $name;
@@ -33,7 +57,9 @@ class WPSDB_CLI extends WPSDB_Addon {
 
 		$new_profile["action"] = "pull";
 
-		$new_profile['connection_info'] = implode( "\n", array( $assoc_args['remote_wordpress'], $assoc_args['token'] ) );
+		$new_profile['connection_info'] = implode( "\n", array( $assoc_args['remote-wordpress'], $assoc_args['token'] ) );
+		unset( $assoc_args['remote-wordpress'] );
+		unset( $assoc_args['token'] );
 
 		$new_profile["table_migrate_option"] = 'migrate_only_with_prefix';
 
@@ -63,12 +89,20 @@ class WPSDB_CLI extends WPSDB_Addon {
 		$new_profile["save_migration_profile"] = "1";
 		$new_profile["save_migration_profile_option"] = "new";
 
-		$new_profile = array_merge( $new_profile, $assoc_args );
+		$new_profile = array_merge( $new_profile, $this->keys_from_kebab_case_to_snake_case( $assoc_args ) );
 
-		if ( isset( $assoc_args['select_tables'] ) ) {
+		if ( isset( $assoc_args['exclude-post-types'] ) ) {
+			$new_profile['exclude_post_types'] = '1';
+			$new_profile['select_post_types'] = explode( ',', $assoc_args['exclude-post-types'] );
+
+			WP_CLI::log(  __( 'Excluding WordPress post types from migration profile:',  'wp-sync-db-cli' ) );
+			$this->log_list( $new_profile['select_post_types'] );
+		}
+
+		if ( isset( $assoc_args['migrate-tables'] ) ) {
 			$new_profile["table_migrate_option"] = 'migrate_select';
 
-			if ( $new_profile["select_tables"] === 'outlandish' ) {
+			if ( $new_profile["migrate-tables"] === 'outlandish' ) {
 				WP_CLI::log(  __( 'Selecting Outlandish default WordPress tables for migraton.',  'wp-sync-db-cli' ) );
 				$new_profile["select_tables"] = array(
 					"wp_commentmeta",
@@ -87,12 +121,9 @@ class WPSDB_CLI extends WPSDB_Addon {
 		      "wp_users",
 				);
 			} else {
-				$new_profile["select_tables"] = explode( ',', $assoc_args['select_tables'] );
+				$new_profile["select_tables"] = explode( ',', $assoc_args['migrate-tables'] );
 				WP_CLI::log(  __( 'The following tables are selected for migration:',  'wp-sync-db-cli' ) );
-
-				foreach ( $new_profile["select_tables"] as $table ) {
-					WP_CLI::log( "- $table" );
-				}
+				$this->log_list( $new_profile["select_tables"] );
 			}
 		}
 
