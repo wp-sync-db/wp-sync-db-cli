@@ -66,37 +66,32 @@ class WPSDBCLI extends WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 * 	wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
+	 * # Setup a profile with the defaults called Staging.
+	 * $ wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
 	 * 																	--token CUOu2t5kaVienGLUxAGhN4bvWh1FXqJA
 	 *
-	 *  Setup a profile with the defaults called Staging.
-	 *
-	 *
-	 * 	wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
+	 * # Setup a profile with the defaults called Staging that only migrates the wp_posts table.
+	 * $ wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
 	 * 																	--token CUOu2t5kaVienGLUxAGhN4bvWh1FXqJA \
 	 *                  								 --migrate-tables=wp_posts
 	 *
-	 *  Setup a profile with the defaults called Staging that only migrates the wp_posts table.
-	 *
-	 *
-	 * 	wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
+	 * # Setup a profile with the defaults called Staging that excludes WordPress page post types.
+	 * $ wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
 	 * 																	--token CUOu2t5kaVienGLUxAGhN4bvWh1FXqJA \
 	 *                  								 --exclude-post-types=page
 	 *
-	 *  Setup a profile with the defaults called Staging that excludes WordPress page post types.
-	 *
-	 *
-	 * 	wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
+	 * # Setup a profile with the defaults called Staging that creates backups when migrations are run.
+	 * 	$ wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
 	 * 																	--token CUOu2t5kaVienGLUxAGhN4bvWh1FXqJA \
 	 *                  								 --create_backup=true
-	 *
-	 *  Setup a profile with the defaults called Staging that creates backups when migrations are run.
 	 *
 	 * @synopsis <profile>
 	 *
 	 * @since 1.0
-	 * @subcommand create-profile
 	 */
+	 /**
+ 		* @subcommand create-profile
+ 		*/
 	public function create_profile( $args, $assoc_args ) {
 		$name = $args[0];
 
