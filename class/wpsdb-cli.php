@@ -11,7 +11,6 @@ class WPSDB_CLI extends WPSDB_Addon {
 	}
 
 	function cli_create_profile( $name, $assoc_args ) {
-		global $wpsdb;
 		$wpsdb_settings = get_option( 'wpsdb_settings' );
 
 		$profile_exists = false;
