@@ -106,7 +106,7 @@ class WPSDBCLI extends WP_CLI_Command {
 		$result = wpdsb_create_profile( $name, $assoc_args );
 
 		if ( true === $result ) {
-			WP_CLI::success( sprintf( __( 'Profile %1$s created.', 'wp-sync-db-cli' ), $name ) );
+			WP_CLI::success( sprintf( __( 'Profile \'%1$s\' created.', 'wp-sync-db-cli' ), $name ) );
 			return;
 		}
 

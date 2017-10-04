@@ -60,10 +60,10 @@ class WPSDB_CLI extends WPSDB_Addon {
 		}
 
 		if ( $profile_exists ) {
-			return $this->cli_error( sprintf( __( 'Profile with the name %1$s already exists.', 'wp-sync-db-cli' ), $name ) );
+			return $this->cli_error( sprintf( __( 'Profile with the name \'%1$s\' already exists.', 'wp-sync-db-cli' ), $name ) );
 		}
 
-		WP_CLI::log(  sprintf( __( 'Creating database migration profile with name %1$s.', 'wp-sync-db-cli' ), $name ) );
+		WP_CLI::log(  sprintf( __( 'Creating database migration profile with name \'%1$s\'.', 'wp-sync-db-cli' ), $name ) );
 
 		$new_profile = array();
 
