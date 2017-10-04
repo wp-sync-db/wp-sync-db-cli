@@ -78,16 +78,12 @@ class WPSDB_CLI extends WPSDB_Addon {
 
 		$new_profile["table_migrate_option"] = 'migrate_only_with_prefix';
 
-		// This is probably going to be a faff to do so leave it.
-		$new_profile["replace_old"] = array(
-			"//staging.bprc.out.re",
-			"/opt/bprc/releases/20171002153612Z/web"
-		);
-
-		$new_profile["replace_new"] = array(
-			"//bprc.local",
-			"/app/web"
-		);
+		// This replacement is typically done by calling the other WordPress site all
+		// retrieving its variables.
+		//
+		// For the moment this is a TODO
+		$new_profile["replace_old"] = array();
+		$new_profile["replace_new"] = array();
 
 		$new_profile["save_computer"] = "1";
 		$new_profile["gzip_file"] = "1";
