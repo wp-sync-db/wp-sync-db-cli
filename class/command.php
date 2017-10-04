@@ -41,19 +41,64 @@ class WPSDBCLI extends WP_CLI_Command {
 	 * ## OPTIONS
 	 *
 	 * <profile>
-	 * : ID of the profile to use for the migration.
+	 * : Name of the new profile to create
+	 *
+	 * [--remote-wordpress=<value>]
+	 * : Remote WordPress location to migrate database from.
+	 *
+	 * This is the first part the whole token you are told to copy from
+	 * the /wp-admin/ backend of Migrate DB under Settings, before the newline.
+	 *
+	 * [--token=<value>]
+	 * : Token from WordPress location to migrate database from.
+	 *
+	 * This is the second part the whole token you are told to copy from
+	 * the /wp-admin/ backend of Migrate DB under Settings, after the newline.
+	 *
+	 * [--migrate-tables=<CSV of tables to migrate>]
+	 * : Comma separated list of tables to migrate from the remote WordPress to locally.
+	 *
+	 * If you set this to `outlandish` it will migrate the tables we would typically expect from WordPress.
+	 *
+	 * [--exclude-post-types=<CSV of tables to migrate>]
+	 * : Comma separated list of post types to exclude from migrate from the remote WordPress to locally.
+	 *
+	 * [--<WP-Migrate-Profile-Option-As-Kebab-Case>=<true|false>]
+	 * : Set any Migrate DB option in this profile.
 	 *
 	 * ## EXAMPLES
 	 *
-	 * 	wp wpsdb create-profile 1
+	 * 	wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
+	 * 																	--token CUOu2t5kaVienGLUxAGhN4bvWh1FXqJA
+	 *
+	 *  Setup a profile with the defaults called Staging.
+	 *
+	 *
+	 * 	wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
+	 * 																	--token CUOu2t5kaVienGLUxAGhN4bvWh1FXqJA \
+	 *                  								 --migrate-tables=wp_posts
+	 *
+	 *  Setup a profile with the defaults called Staging that only migrates the wp_posts table.
+	 *
+	 *
+	 * 	wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
+	 * 																	--token CUOu2t5kaVienGLUxAGhN4bvWh1FXqJA \
+	 *                  								 --exclude-post-types=page
+	 *
+	 *  Setup a profile with the defaults called Staging that excludes WordPress page post types.
+	 *
+	 *
+	 * 	wp wpsdb create-profile Staging --remote-wordpress https://wordpress.example \
+	 * 																	--token CUOu2t5kaVienGLUxAGhN4bvWh1FXqJA \
+	 *                  								 --create_backup=true
+	 *
+	 *  Setup a profile with the defaults called Staging that creates backups when migrations are run.
 	 *
 	 * @synopsis <profile>
 	 *
 	 * @since 1.0
+	 * @subcommand create-profile
 	 */
-	/**
-		* @subcommand create-profile
-		*/
 	public function create_profile( $args, $assoc_args ) {
 		$name = $args[0];
 
