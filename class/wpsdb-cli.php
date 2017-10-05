@@ -10,6 +10,122 @@ class WPSDB_CLI extends WPSDB_Addon {
 		if( ! $this->meets_version_requirements( '1.4b1' ) ) return;
 	}
 
+	function log_list( $list ) {
+		foreach ( $list as $item ) {
+			WP_CLI::log( "- $item" );
+		}
+	}
+
+	function kebab_case_to_snake_case( $value ) {
+		return preg_replace_callback('/-(.)/u', function($el) {
+			return '_' . $el[1];
+		}, $value);
+	}
+
+	function values_as_booleans_to_one_and_zero_strings( $array ) {
+		$result = [];
+
+		foreach ($array as $key => $value) {
+			if ( $value === 'true' || $value === 'false' ) {
+				$result[$key] = (string)(int)($value === 'true');
+				continue;
+			}
+
+			$result[$key] = $value;
+		}
+
+		return $result;
+	}
+
+	function keys_from_kebab_case_to_snake_case( $array ) {
+		$result = [];
+
+		foreach ($array as $key => $value) {
+				$result[ $this->kebab_case_to_snake_case( $key ) ] = $value;
+		}
+
+		return $result;
+	}
+
+	function cli_create_profile( $name, $assoc_args ) {
+		$wpsdb_settings = get_option( 'wpsdb_settings' );
+
+		$profile_exists = false;
+
+		foreach ( $wpsdb_settings['profiles'] as $profile ) {
+			if ( $profile['name'] === $name ) {
+				$profile_exists = true;
+				break;
+			}
+		}
+
+		if ( $profile_exists ) {
+			return $this->cli_error( sprintf( __( 'Profile with the name \'%1$s\' already exists.', 'wp-sync-db-cli' ), $name ) );
+		}
+
+		WP_CLI::log(  sprintf( __( 'Creating database migration profile with name \'%1$s\'.', 'wp-sync-db-cli' ), $name ) );
+
+		$new_profile = array();
+
+		$new_profile["name"] = $name;
+		$new_profile["create_new_profile"] = $name;
+
+		$new_profile["action"] = "pull";
+
+		$new_profile['connection_info'] = implode( "\n", array( $assoc_args['remote-wordpress'], $assoc_args['token'] ) );
+		unset( $assoc_args['remote-wordpress'] );
+		unset( $assoc_args['token'] );
+
+		$new_profile["table_migrate_option"] = 'migrate_only_with_prefix';
+
+		// This replacement is typically done by calling the other WordPress site all
+		// retrieving its variables.
+		//
+		// For the moment this is a TODO
+		$new_profile["replace_old"] = array();
+		$new_profile["replace_new"] = array();
+
+		$new_profile["save_computer"] = "1";
+		$new_profile["gzip_file"] = "1";
+		$new_profile["replace_guids"] = "1";
+		$new_profile["exclude_spam"] = "1";
+		$new_profile["keep_active_plugins"] = "1";
+		$new_profile["create_backup"] = "0";
+		$new_profile["backup_option"] = "backup_selected";
+
+		$new_profile["exclude_post_types"] = "0";
+		$new_profile["exclude_transients"] = "1";
+		$new_profile["media_files"] = "1";
+
+		$new_profile["save_migration_profile"] = "1";
+		$new_profile["save_migration_profile_option"] = "new";
+
+		$values_for_wordpress = $this->keys_from_kebab_case_to_snake_case( $assoc_args );
+		$values_for_wordpress = $this->values_as_booleans_to_one_and_zero_strings( $values_for_wordpress );
+		$new_profile = array_merge( $new_profile, $values_for_wordpress );
+
+		if ( isset( $assoc_args['exclude-post-types'] ) ) {
+			$new_profile['exclude_post_types'] = '1';
+			$new_profile['select_post_types'] = explode( ',', $assoc_args['exclude-post-types'] );
+
+			WP_CLI::log(  __( 'Excluding WordPress post types from migration profile:',  'wp-sync-db-cli' ) );
+			$this->log_list( $new_profile['select_post_types'] );
+		}
+
+		if ( isset( $assoc_args['migrate-tables'] ) ) {
+			$new_profile["table_migrate_option"] = 'migrate_select';
+
+			$new_profile["select_tables"] = explode( ',', $assoc_args['migrate-tables'] );
+			WP_CLI::log(  __( 'The following tables are selected for migration:',  'wp-sync-db-cli' ) );
+			$this->log_list( $new_profile["select_tables"] );
+		}
+
+		$wpsdb_settings['profiles'][] = $new_profile;
+		update_option( 'wpsdb_settings', $wpsdb_settings );
+
+		return true;
+	}
+
 	function cli_migration( $profile ) {
 		global $wpsdb;
 		$wpsdb_settings = get_option( 'wpsdb_settings' );
