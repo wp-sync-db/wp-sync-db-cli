@@ -29,10 +29,10 @@ function wp_sync_db_cli_loaded() {
 }
 add_action( 'plugins_loaded', 'wp_sync_db_cli_loaded', 20 );
 
-function wpsdb_migrate( $profile ) {
+function wpsdb_migrate( $profile, $manual_profile ) {
 	global $wpsdb_cli;
 	if( empty( $wpsdb_cli ) ) {
 		return new WP_Error( 'wpsdb_cli_error', __( 'WP Sync DB CLI class not available', 'wp-sync-db-cli' ) );
 	}
-	return $wpsdb_cli->cli_migration( $profile );
+	return $wpsdb_cli->cli_migration( $profile,  $manual_profile );
 }
