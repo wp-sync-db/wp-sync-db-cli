@@ -29,7 +29,7 @@ class WPSDBCLI extends WP_CLI_Command
 	 * [--create-backup=<bit>]
 	 * : Whether to take a backup before running the action.
 	 * ---
-	 * default: 0
+	 * default: 1
 	 * options:
 	 *   - 0
 	 *   - 1
