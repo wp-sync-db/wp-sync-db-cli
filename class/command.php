@@ -39,6 +39,7 @@ class WPSDBCLI extends WP_CLI_Command
 	 *
 	 * 	wp wpsdb migrate --profile=1
 	 * 	wp wpsdb migrate --connection-info=https://example.com\n6AvE1jnBHIZtITuNCXj2eZArNM8uqNXC --action=pull --create-backup=1
+	 *  wp wpsdb migrate --profile=1 --connection-info=https://example.com\n6AvE1jnBHIZtITuNCXj2eZArNM8uqNXC --action=pull --create-backup=1
 	 *
 	 * @synopsis [--profile=<int>] [--connection-info=<string>] [--action=<string>] [--create-backup=<bit>]
 	 *
