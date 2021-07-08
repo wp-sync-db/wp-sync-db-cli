@@ -17,3 +17,8 @@ The following two variations of the `wpsdb migrate` command are possible by supp
 **action** can be set to either `pull` or `push` depending on the direction of the DB sync
 
 **create-backup** is a bit field that indicates whether the DB should be backed up prior to a transfer. This defaults to 1.
+
+#### Target a profile and fallback to a connection string 
+`wp wpsdb migrate --profile=1 --connection-info=https://example.com\n6AvE1jnBHIZtITuNCXj2eZArNM8uqNXC --action=pull --create-backup=1`
+
+In this example we can attempt to target a profile that doesn't yet exist before the migration and instead fallback to the manual profile arguments provided. Once the migration is complete if we re-run this command, then the profile will have been migrated over and this will be used. This is useful from an automation point of view.
