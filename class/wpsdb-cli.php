@@ -21,7 +21,8 @@ class WPSDB_CLI extends WPSDB_Addon {
 		$this->set_time_limit();
 		$wpsdb->set_cli_migration();
 
-		$profile = apply_filters( 'wpsdb_cli_profile_before_migration', $manual_profile ?? $wpsdb_settings['profiles'][$profile] );
+		// If we have a profile by the supplied ID, then use it. Otherwise, attempt to use the provided manual_profile
+		$profile = apply_filters( 'wpsdb_cli_profile_before_migration', $wpsdb_settings['profiles'][$profile] ? $wpsdb_settings['profiles'][$profile] : $manual_profile );
 		$connection_info = explode( "\n", $profile['connection_info'] );
 		$form_data = http_build_query( $profile );
 
