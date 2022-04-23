@@ -1,7 +1,7 @@
 {
-  "name": "wp-sync-db/wp-sync-db-cli",
+  "name": "josephdsouza86/wp-sync-db-cli",
   "type": "wordpress-plugin",
-  "homepage": "https://github.com/wp-sync-db/wp-sync-db-cli",
+  "homepage": "https://github.com/josephdsouza86/wp-sync-db-cli",
   "license": "GPL-2.0",
   "description": "WP Sync DB CLI Addon",
   "keywords": ["plugin","wordpress","wp-sync-db","cli"],

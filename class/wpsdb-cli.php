@@ -10,18 +10,19 @@ class WPSDB_CLI extends WPSDB_Addon {
 		if( ! $this->meets_version_requirements( '1.4b1' ) ) return;
 	}
 
-	function cli_migration( $profile ) {
+	function cli_migration( $profile, $manual_profile ) {
 		global $wpsdb;
 		$wpsdb_settings = get_option( 'wpsdb_settings' );
 		--$profile;
 		if( ! $this->meets_version_requirements( '1.4b1' ) ) return $this->cli_error( __( 'Please update WP Sync DB.', 'wp-sync-db-cli' ) );
-		if( ! isset( $profile ) ) return $this->cli_error( __( 'Profile ID missing.', 'wp-sync-db-cli' ) );
-		if( ! isset( $wpsdb_settings['profiles'][$profile] ) ) return $this->cli_error( __( 'Profile ID not found.', 'wp-sync-db-cli' ) );
+		if( ! isset( $profile ) && ! isset( $manual_profile ) ) return $this->cli_error( __( 'Profile ID missing.', 'wp-sync-db-cli' ) );
+		if( ! isset( $manual_profile ) && ! isset( $wpsdb_settings['profiles'][$profile] ) ) return $this->cli_error( __( 'Profile ID not found.', 'wp-sync-db-cli' ) );
 
 		$this->set_time_limit();
 		$wpsdb->set_cli_migration();
 
-		$profile = apply_filters( 'wpsdb_cli_profile_before_migration', $wpsdb_settings['profiles'][$profile] );
+		// If we have a profile by the supplied ID, then use it. Otherwise, attempt to use the provided manual_profile
+		$profile = apply_filters( 'wpsdb_cli_profile_before_migration', $wpsdb_settings['profiles'][$profile] ? $wpsdb_settings['profiles'][$profile] : $manual_profile );
 		$connection_info = explode( "\n", $profile['connection_info'] );
 		$form_data = http_build_query( $profile );
 
